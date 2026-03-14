@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { leadSchema } from "@/src/lib/leadSchema";
-import { supabaseAdmin } from "@/src/supabase/admin";
+import { supabaseAdmin } from "@/src/supabaseClients/admin";
 
 export async function POST(req: Request) {
   try {

@@ -45,7 +45,6 @@ export const assetsOptions = [
   "No",
 ] as const;
 
-export const reminderChannelOptions = ["Email", "WhatsApp"] as const;
 
 export const ALLOWED_NEEDS = [
   "Ad creatives for Meta/TikTok/YouTube",
@@ -125,10 +124,5 @@ export const QUESTIONS: QuestionConfig[] = [
     label: "Do you have the assets to produce ads this week?",
     options: assetsOptions,
   },
-  {
-    key: "q8",
-    field: "reminderChannel",
-    label: "Contact channel for reminders",
-    options: reminderChannelOptions,
-  },
+
 ];

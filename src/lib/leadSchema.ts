@@ -11,7 +11,7 @@ import {
   startOptions,
   demandOptions,
   assetsOptions,
-  reminderChannelOptions,
+  
 } from "@/src/utils";
 
 import {
@@ -36,7 +36,6 @@ export const leadSchema = z
     demand: z.enum(demandOptions).optional(),
     assets: z.enum(assetsOptions).optional(),
 
-    reminderChannel: z.enum(reminderChannelOptions).optional(),
     whatsapp: z.string().optional(),
   })
   .superRefine((data, ctx) => {
@@ -49,7 +48,6 @@ export const leadSchema = z
       "startWhen",
       "demand",
       "assets",
-      "reminderChannel",
     ];
 
     for (const field of requiredFields) {
@@ -131,23 +129,7 @@ export const leadSchema = z
       });
     }
 
-    // Q8 rule: WhatsApp required only if reminderChannel = WhatsApp
-    if (data.reminderChannel === "WhatsApp") {
-      if (!data.whatsapp || !data.whatsapp.trim()) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["whatsapp"],
-          message: "WhatsApp number is required for WhatsApp reminders.",
-        });
-      } else if (!isValidWhatsApp(data.whatsapp)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["whatsapp"],
-          message:
-            "Enter a valid WhatsApp number (preferably with country code, e.g. +92...).",
-        });
-      }
-    }
+
   });
 
 export type FormValues = z.infer<typeof leadSchema>;

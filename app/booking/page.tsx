@@ -8,6 +8,8 @@ import { QUESTIONS } from "@/src/utils";
 import ContactInfo from "@/components/ContactInfo";
 import PillRadio from "@/components/PillRadio";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+
 export default function ContactSplitLayout() {
   const {
     register,
@@ -28,30 +30,49 @@ export default function ContactSplitLayout() {
       startWhen: undefined,
       demand: undefined,
       assets: undefined,
-      reminderChannel: "Email",
       whatsapp: "",
     },
     mode: "onChange",
     reValidateMode: "onChange",
   });
+
   const router = useRouter();
   const values = watch();
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [emailTaken, setEmailTaken] = useState(false);
 
   const onSubmit = async (data: FormValues) => {
+    setSubmitError(null);
+    setEmailTaken(false);
+
+    // check for existing booking before submitting
+    const checkRes = await fetch(
+      `/api/check-booking?email=${encodeURIComponent(data.email)}`,
+    );
+    const checkData = await checkRes.json();
+
+    if (checkData.exists) {
+      setEmailTaken(true);
+      setSubmitError(
+        "An appointment already exists for this email. Please contact us if you need to reschedule.",
+      );
+      return;
+    }
+
+    // proceed with lead submission
     const res = await fetch("/api/leads", {
-      method: "POST", //be default method is GET so we explicitly need to tell the browser that this is a POST
-      headers: { "Content-Type": "application/json" }, //tell the browser content type of your POST request
-      body: JSON.stringify(data), //fetch can not send plain JSON objects thats why we convert it into a string
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
     });
     const out = await res.json();
 
     if (!res.ok) {
-      console.error(out);
+      setSubmitError(out.error ?? "Something went wrong. Please try again.");
       return;
     }
-    router.push("/booking/confirmDate&Time");
 
-    console.log("Inserted Row", out.lead);
+    router.push("/booking/confirmDate&Time");
   };
 
   return (
@@ -85,7 +106,13 @@ export default function ContactSplitLayout() {
                 {/* Email */}
                 <div>
                   <input
-                    {...register("email")}
+                    {...register("email", {
+                      onChange: () => {
+                        // reset email taken state when user edits email
+                        setEmailTaken(false);
+                        setSubmitError(null);
+                      },
+                    })}
                     className="mt-2 w-full border-b border-black/10 bg-transparent py-3 text-base outline-none placeholder:text-black/30 focus:border-black/30"
                     placeholder="Email *"
                   />
@@ -119,22 +146,10 @@ export default function ContactSplitLayout() {
                           options={q.options as any}
                           value={fieldValue}
                           onChange={(v) => {
-                            // Always set the selected value
                             setValue(fieldName, v as any, {
                               shouldValidate: true,
                               shouldDirty: true,
                             });
-
-                            // Special logic ONLY for reminderChannel
-                            if (q.field === "reminderChannel") {
-                              if (v !== "WhatsApp") {
-                                // Clear whatsapp value when switching away
-                                setValue("whatsapp", "", {
-                                  shouldValidate: true,
-                                  shouldDirty: true,
-                                });
-                              }
-                            }
                           }}
                         />
                       </div>
@@ -144,28 +159,6 @@ export default function ContactSplitLayout() {
                           {fieldError}
                         </p>
                       )}
-
-                      {/* Special case: WhatsApp input */}
-                      {q.field === "reminderChannel" &&
-                        values.reminderChannel === "WhatsApp" && (
-                          <div className="mt-4">
-                            <input
-                              {...register("whatsapp", {
-                                onChange: () => {
-                                  // forces RHF to re-check schema as they type
-                                  // (works with mode:onChange as well, but this makes it extra reliable)
-                                },
-                              })}
-                              className="mt-2 w-full border-b border-black/10 bg-transparent py-3 text-base outline-none placeholder:text-black/30 focus:border-black/30"
-                              placeholder="WhatsApp number (e.g. +92...) *"
-                            />
-                            {errors.whatsapp?.message && (
-                              <p className="mt-2 text-sm text-red-600">
-                                {errors.whatsapp.message}
-                              </p>
-                            )}
-                          </div>
-                        )}
                     </div>
                   );
                 })}
@@ -175,12 +168,17 @@ export default function ContactSplitLayout() {
 
               {/* Sticky footer submit */}
               <div className="sticky bottom-0 bg-[#f6f3ef] pt-4">
+                {submitError && (
+                  <p className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                    {submitError}
+                  </p>
+                )}
                 <button
                   type="submit"
-                  disabled={!isValid || isSubmitting}
+                  disabled={!isValid || isSubmitting || emailTaken}
                   className={[
                     "w-full rounded-full px-6 py-3 text-sm font-medium transition",
-                    !isValid || isSubmitting
+                    !isValid || isSubmitting || emailTaken
                       ? "cursor-not-allowed bg-black/20 text-black/50"
                       : "bg-black text-white hover:bg-black/90",
                   ].join(" ")}

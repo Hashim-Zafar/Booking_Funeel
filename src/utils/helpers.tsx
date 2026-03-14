@@ -1,7 +1,7 @@
 import { adSpendOptions, creativeBudgetOptions } from ".";
 import { DateTime, Duration } from "luxon";
 import { call_slot_minutes, timezone, WEEKLY_WINDOWS } from "./availibility";
-import { time } from "console";
+import { IANAZone } from "luxon";
 
 //!Form validation helpers
 export const isAdSpendQualified = (v: (typeof adSpendOptions)[number]) => {
@@ -97,13 +97,29 @@ export function isWithInAvailability(dtStart: DateTime, dtEnd: DateTime) {
 export function isUniqueVoilation(error: any) {
   return error?.code === "23505";
 }
-//!Availibility route
+//!Availibility api route
 export function dayRangeUTCFromLocalDate(date: string, tz: string) {
   const startUTC = DateTime.fromISO(date, { zone: tz }).startOf("day").toUTC();
   const endUTC = startUTC.plus({ days: 1 });
 
   return {
     startUTC: startUTC.toISO(),
-    endUTCExclusive: endUTC.toISO(),
+    endUTC: endUTC.toISO(),
   };
 }
+
+export function isValidDate(date: string) {
+  const formatcheck = /^\d{4}-\d{2}-\d{2}$/;
+
+  if (!formatcheck.test(date)) return false;
+
+  //check if its a real calendar date
+  const dt = DateTime.fromFormat(date, "yyyy-MM-dd", { zone: "utc" });
+  return dt.isValid;
+}
+
+export function isValidTimeZone(zone: string) {
+  return IANAZone.isValidZone(zone);
+}
+
+//!confirmDate&Time route
