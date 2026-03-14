@@ -167,9 +167,6 @@ export default function BookingCallsUI() {
         );
       }
 
-      setBookingSuccess("Booking confirmed successfully.");
-      setSelectedSlot(null);
-      await fetchSlots();
       router.push("/confirm-email");
     } catch (err: unknown) {
       const message =
