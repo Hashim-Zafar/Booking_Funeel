@@ -45,10 +45,7 @@ export async function createMeetingEvent({
         dateTime: endTimeISO,
         timeZone: timezone,
       },
-      attendees: [
-        { email: attendeeEmail },              // the lead
-        { email: calendarId },                 // the host (your client)
-      ],
+    
       conferenceData: {
         createRequest: {
           requestId: crypto.randomUUID(),      // must be unique per request
