@@ -7,7 +7,6 @@ export default function ConfirmView({ token }: { token: string | null }) {
     "loading",
   );
   const [message, setMessage] = useState<string | null>(null);
-  const [details, setDetails] = useState<string | null>(null);
 
   useEffect(() => {
     if (!token) {
@@ -27,7 +26,6 @@ export default function ConfirmView({ token }: { token: string | null }) {
         if (!res.ok) {
           setStatus("error");
           setMessage(data.message ?? "Something went wrong");
-          setDetails(data.details ?? "Failed to fetch details");
           return;
         }
 
@@ -41,13 +39,6 @@ export default function ConfirmView({ token }: { token: string | null }) {
   }, [token]);
 
   if (status === "loading") return <p>Confirming your booking...</p>;
-  if (status === "error")
-    return (
-      <div>
-        <p>{message}</p>
-        <p>{details}</p>
-      </div>
-    );
-
+  if (status === "error") return <p>{message}</p>;
   return <p>Booking confirmed!</p>;
 }

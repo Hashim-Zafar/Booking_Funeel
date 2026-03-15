@@ -127,6 +127,7 @@ export async function POST(req: Request) {
         lead_id: lead.id,
         timezone: parsed.data.timezone ?? "UTC",
         expires_at: expiresAt,
+        meeting_link: "https://example.com/demo-meeting",
         start_time: startUTC,
         end_time: endUTC,
       });
