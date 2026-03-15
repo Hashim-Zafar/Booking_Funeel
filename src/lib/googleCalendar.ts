@@ -6,13 +6,11 @@ export async function createMeetingEvent({
   startTimeISO,
   endTimeISO,
   timezone,
-  attendeeEmail,
 }: {
   summary: string;
   startTimeISO: string;
   endTimeISO: string;
   timezone: string;
-  attendeeEmail: string;
 }) {
   const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
   const serviceAccountEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
@@ -50,7 +48,7 @@ export async function createMeetingEvent({
         createRequest: {
           requestId: crypto.randomUUID(),      // must be unique per request
           conferenceSolutionKey: {
-            type: "hangoutsMeet",
+            type: "eventHangout",
           },
         },
       },

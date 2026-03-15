@@ -54,7 +54,6 @@ try {
     startTimeISO: pending_data.start_time,
     endTimeISO: pending_data.end_time,
     timezone: pending_data.timezone ?? "UTC",
-    attendeeEmail: pending_data.email,
   });
   meetLink = result.meetLink;
   eventId = result.eventId;
