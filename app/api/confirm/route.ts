@@ -2,8 +2,11 @@ import { NextResponse } from "next/server";
 import { confirmRequestBody } from "@/src/lib/confirmRoute";
 import { supabaseAdmin } from "@/src/supabaseClients/admin";
 import { isUniqueVoilation } from "@/src/utils/helpers";
+import { createMeetingEvent } from "@/src/lib/googleCalendar";
 
 export async function POST(req: Request) {
+  let meetLink: string;
+let eventId: string;
   try {
     const request = await req.json();
     const parsed = confirmRequestBody.safeParse(request);
@@ -42,6 +45,24 @@ export async function POST(req: Request) {
     { status: 500 }
   );
 }
+
+//generate the meeting link
+try {
+  const result = await createMeetingEvent({
+    summary: `Call with ${pending_data.name}`,
+    startTimeISO: pending_data.start_time,
+    endTimeISO: pending_data.end_time,
+    timezone: pending_data.timezone ?? "UTC",
+    attendeeEmail: pending_data.email,
+  });
+  meetLink = result.meetLink;
+  eventId = result.eventId;
+} catch (err) {
+  return NextResponse.json(
+    { message: "Failed to generate meeting link", details: String(err) },
+    { status: 500 }
+  );
+}
     //?insert data extracted from pending_appointments and insert it with in appointments
     const { data: appointment_data, error: appointment_error } =
       await supabaseAdmin.from("appointments").insert({
@@ -51,8 +72,9 @@ export async function POST(req: Request) {
         end_time: pending_data.end_time,
         timezone: pending_data.timezone,
         lead_id: pending_data.lead_id,
-        meeting_link: pending_data.meeting_link,
-          status: "confirmed",
+        meeting_link: meetLink,
+        status: "confirmed",
+        google_event_id: eventId,
       });
     //!guard clause
     if (appointment_error) {
