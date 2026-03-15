@@ -3,6 +3,7 @@ import { confirmRequestBody } from "@/src/lib/confirmRoute";
 import { supabaseAdmin } from "@/src/supabaseClients/admin";
 import { isUniqueVoilation } from "@/src/utils/helpers";
 import { createMeetingEvent } from "@/src/lib/googleCalendar";
+import { string } from "zod";
 
 export async function POST(req: Request) {
   let meetLink: string;
@@ -58,6 +59,7 @@ try {
   meetLink = result.meetLink;
   eventId = result.eventId;
 } catch (err) {
+  console.error("Google Calender Error",String(err))
   return NextResponse.json(
     { message: "Failed to generate meeting link", details: String(err) },
     { status: 500 }
