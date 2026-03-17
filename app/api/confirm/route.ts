@@ -2,10 +2,8 @@ import { NextResponse } from "next/server";
 import { confirmRequestBody } from "@/src/lib/confirmRoute";
 import { supabaseAdmin } from "@/src/supabaseClients/admin";
 import { isUniqueVoilation } from "@/src/utils/helpers";
-import { createDailyRoom } from "@/src/lib/daily";
 
 export async function POST(req: Request) {
-  let meetLink:string;
   try {
     console.log("Confirm route Hit")
     const request = await req.json();
@@ -46,16 +44,9 @@ export async function POST(req: Request) {
     { status: 500 }
   );
 }
-//generate meeting link
-try {
-  console.log("Calling the createDailyRoom function")
-  meetLink = await createDailyRoom(pending_data.end_time);
-} catch (err) {
-  return NextResponse.json(
-    { message: "Failed to generate meeting link", details: String(err) },
-    { status: 500 }
-  );
-}
+
+
+
 console.log("Inserting data into db")
     //?insert data extracted from pending_appointments and insert it with in appointments
     const { data: appointment_data, error: appointment_error } =
@@ -66,7 +57,7 @@ console.log("Inserting data into db")
         end_time: pending_data.end_time,
         timezone: pending_data.timezone,
         lead_id: pending_data.lead_id,
-        meeting_link: meetLink,
+        meeting_link: pending_data.meeting_link,
           status: "confirmed",
       });
     //!guard clause
