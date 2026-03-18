@@ -47,7 +47,7 @@ export default function ContactSplitLayout() {
 
     // check for existing booking before submitting
     const checkRes = await fetch(
-      `/api/check-booking?email=${encodeURIComponent(data.email)}`,
+      `/api/funnel/check-booking?email=${encodeURIComponent(data.email)}`,
     );
     const checkData = await checkRes.json();
 
