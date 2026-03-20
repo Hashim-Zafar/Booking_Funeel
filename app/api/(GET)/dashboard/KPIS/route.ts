@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/src/supabaseClients/admin";
-import { querySchema } from "@/src/lib/KPISRouteSchema";
+import { querySchema } from "@/src/lib/dashboardRoutesSchema";
 
 export async function GET(req: NextRequest) {
   try {
@@ -29,10 +29,13 @@ export async function GET(req: NextRequest) {
     });
     //!guard clause
     if (error) throw new Error(error.message);
-    //?returned data
-    console.log(data);
-    const result = data?.[0];
 
+    const result = data?.[0];
+    //!guard clause
+    if (!result) {
+      return NextResponse.json({ error: "No data returned" }, { status: 500 });
+    }
+    //return data
     return NextResponse.json(
       {
         totalLeads: result.total_leads,
