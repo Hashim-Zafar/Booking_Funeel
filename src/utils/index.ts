@@ -45,7 +45,6 @@ export const assetsOptions = [
   "No",
 ] as const;
 
-
 export const ALLOWED_NEEDS = [
   "Ad creatives for Meta/TikTok/YouTube",
   "UGC",
@@ -124,5 +123,4 @@ export const QUESTIONS: QuestionConfig[] = [
     label: "Do you have the assets to produce ads this week?",
     options: assetsOptions,
   },
-
 ];

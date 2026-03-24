@@ -8,6 +8,7 @@ export default function ConfirmView({ token }: { token: string | null }) {
   );
   const [message, setMessage] = useState<string | null>(null);
   const [details, setDetails] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!token) {
@@ -28,6 +29,7 @@ export default function ConfirmView({ token }: { token: string | null }) {
           setStatus("error");
           setMessage(data.message ?? "Something went wrong");
           setDetails(data.details ?? "Failed to fetch details");
+          setError(data.error ?? "Failed to fetch the error message");
           return;
         }
 
@@ -46,6 +48,7 @@ export default function ConfirmView({ token }: { token: string | null }) {
       <div>
         <p>{message}</p>
         <p>{details}</p>
+        <p>{error}</p>
       </div>
     );
 

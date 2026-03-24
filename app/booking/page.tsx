@@ -5,8 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { leadSchema as schema } from "@/src/lib/leadSchema";
 import type { FormValues } from "@/src/lib/leadSchema";
 import { QUESTIONS } from "@/src/utils";
-import ContactInfo from "@/components/ContactInfo";
-import PillRadio from "@/components/PillRadio";
+import ContactInfo from "@/components/main-components/funnel/ContactInfo";
+import PillRadio from "@/components/helper_components/PillRadio";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
