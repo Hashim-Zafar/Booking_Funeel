@@ -1,7 +1,8 @@
 import { adSpendOptions, creativeBudgetOptions } from ".";
-import { DateTime, Duration } from "luxon";
+import { DateTime } from "luxon";
 import { call_slot_minutes, timezone, WEEKLY_WINDOWS } from "./availibility";
 import { IANAZone } from "luxon";
+import { LeadQualityData, error } from "./types";
 
 //!Form validation helpers
 export const isAdSpendQualified = (v: (typeof adSpendOptions)[number]) => {
@@ -122,4 +123,15 @@ export function isValidTimeZone(zone: string) {
   return IANAZone.isValidZone(zone);
 }
 
-//!confirmDate&Time route
+export function getBarShade(pct: number): string {
+  if (pct < 30) return "bg-emerald-200";
+  if (pct < 50) return "bg-emerald-300";
+  if (pct < 70) return "bg-emerald-400";
+  if (pct < 90) return "bg-emerald-500";
+  return "bg-emerald-600";
+}
+
+export function isErrorResponse(res: LeadQualityData | error): res is error {
+  //when the function returns true type script will assume it is an error
+  return "success" in res && res.success === false; //checks if the object has a property called success , and if it does check if success === false?
+}

@@ -1,7 +1,7 @@
 import "./dashboard.css";
-import { Inconsolata, Inter } from "next/font/google";
+import { Manrope, Inter } from "next/font/google";
 
-const monospace = Inconsolata({
+const manrope = Manrope({
   subsets: ["latin"],
   variable: "--dash-font-primary",
   weight: ["400", "500", "600", "700"],
@@ -19,7 +19,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`dash-page ${monospace.variable} ${inter.variable}`}>
+    <div className={`dash-page ${manrope.variable} ${inter.variable}`}>
       {children}
     </div>
   );
