@@ -9,3 +9,4 @@ export const WEEKLY_WINDOWS: WeeklyWindow[] = [
 
 export const timezone = "Asia/Karachi";
 export const call_slot_minutes = 40;
+export const DecisionMakerthreshold = 50;

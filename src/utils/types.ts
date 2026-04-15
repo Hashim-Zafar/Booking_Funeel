@@ -77,3 +77,49 @@ export interface error {
   success: boolean;
   error: string;
 }
+
+export interface DecisionData {
+  decisionMaker: number;
+  needsToBringSomeone: number;
+}
+
+export interface decisionMakerProps {
+  decision: DecisionData;
+  totalRows: number;
+}
+
+export interface NeedsData {
+  adCreatives: number;
+  ugc: number;
+  brandVideo: number;
+  notSure: number;
+}
+
+export interface leadIntentProps {
+  needs: NeedsData;
+  totalRows: number;
+}
+
+export interface TimelineData {
+  asap: number;
+  oneToTwoWeeks: number;
+  thisMonth: number;
+}
+
+export interface readinessTimelineProps {
+  startTimeline: TimelineData;
+  totalRows: number;
+}
+
+export interface AdSpendData {
+  zero: number;
+  s1_500: number;
+  s500_2000: number;
+  s2000_10000: number;
+  s10000Plus: number;
+}
+
+export interface adSpendDistributionProps {
+  adSpend: AdSpendData;
+  totalRows: number;
+}

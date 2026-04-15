@@ -6,10 +6,13 @@ import ReadinessTimeline from "@/components/helper_components/readinessTimeline"
 import { LeadQualityData, leadInsightProps, error } from "@/src/utils/types";
 import { supabaseAdmin } from "@/src/supabaseClients/admin";
 import { isErrorResponse } from "@/src/utils/helpers";
+import AdSpendDistribution from "@/components/helper_components/adSpend";
 
+//fetch data from the database
 async function getLeadQualityData(
   startDate: string,
 ): Promise<LeadQualityData | error> {
+  //call the function
   const { data, error: supabaseError } = await supabaseAdmin.rpc(
     "get_lead_quality",
     {
@@ -18,13 +21,13 @@ async function getLeadQualityData(
     },
   );
 
-  // Database/system error
+  // !Database/system error
   if (supabaseError) {
     console.error("Supabase error:", supabaseError);
     return { success: false, error: supabaseError.message };
   }
 
-  // No data returned
+  // !No data returned
   if (!data || data.length === 0) {
     return { success: false, error: "No leads found" };
   }
@@ -101,6 +104,10 @@ export default async function LeadInsights({ startDate }: leadInsightProps) {
 
         <div className="lead-insights__col">
           <LeadIntent needs={data.needs} totalRows={data.totalRows} />
+          <AdSpendDistribution
+            adSpend={data.adSpend}
+            totalRows={data.totalRows}
+          />
           <ReadinessTimeline
             startTimeline={data.startTimeline}
             totalRows={data.totalRows}

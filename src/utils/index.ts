@@ -156,3 +156,16 @@ export const calloutBg: Record<number, string> = {
   4: "#fef3c7",
   5: "#fee2e2",
 };
+
+export const intentBuckets = [
+  { key: "adCreatives", label: "Ad Creatives" },
+  { key: "ugc", label: "UGC Content" },
+  { key: "brandVideo", label: "Brand Video" },
+  { key: "notSure", label: "Not Sure" },
+] as const;
+
+export const timelineBuckets = [
+  { key: "asap", label: "IMMEDIATE" },
+  { key: "oneToTwoWeeks", label: "1–3 MONTHS" },
+  { key: "thisMonth", label: "3+ MONTHS" },
+] as const;

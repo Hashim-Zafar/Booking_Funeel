@@ -161,7 +161,8 @@ export async function POST(req: Request) {
         timezone: parsed.data.timezone ?? "UTC",
         token,
       });
-    } catch {
+    } catch (error) {
+      console.error("Failed to send confirmation email", error);
       await supabaseAdmin
         .from("pending_appointments")
         .delete()

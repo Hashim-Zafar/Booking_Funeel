@@ -1,3 +1,4 @@
+@import "tailwindcss";
 @layer theme {
   :root {
     --dash-success: #059669; /* used for Attended calls , high value budget segments , confirmed status badges , and +ve growth indicators*/
@@ -7,7 +8,13 @@
     --dash-secondary-text: #64748b; /*used for sub-lables, micro insight text , and less critical data*/
     --dash-bg-page: #f8fafc;
     --dashb-card-bg: #e2e8f0; /*used for subtle horizontal lines and borders*/
-
+    /*progress bar colors*/
+    --dash-progress-strong: #007bff;
+    --dash-progress-medium: #3395ff;
+    --dash-progress-low: #66b0ff;
+    --dash-progress-ultra-low: #99caff;
+    /*progress bar background*/
+    --dash-progress-bg: #d9eaff;
     /* --- Typography --- */
     --dash-font-primary: ; /* set by Next.js layout */
     --dash-font-secondary: ; /* set by Next.js layout */
@@ -289,13 +296,26 @@
   .lead-insights__grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--dash-gap);
+    gap: 0;
+    border: 1px solid #d1d5dc;
+    border-radius: 8px;
+    overflow: hidden;
+    @apply px-4;
   }
 
   .lead-insights__col {
     display: flex;
     flex-direction: column;
-    gap: var(--dash-gap);
+
+    background: var(--dash-bg-page);
+  }
+
+  .lead-insights__col:nth-child(1) {
+    border-right: 1px solid #d1d5dc;
+  }
+
+  .lead-insights__col:nth-child(2) {
+    background: var(--dash-bg-page);
   }
 
   .lead-insights__dq-placeholder {
@@ -360,7 +380,7 @@
 
   /* ---- Shared insight card ---- */
   .insight-card {
-    background: var(--dash-bg-page);
+    background: var(--dash-card-bg);
     border: 1px solid var(--dash-border);
     border-radius: var(--dash-radius-md);
     padding: 20px;
@@ -460,7 +480,7 @@
   .budget-bar__track {
     width: 100%;
     height: 16px;
-    background: #d1fae5;
+    background: var(--dash-progress-bg);
     border-radius: 999px;
     overflow: hidden;
   }
@@ -518,84 +538,11 @@
     color: var(--dash-secondary-text);
     font-family: var(--dash-font-secondary);
   }
+}
 
-  /* ---- Lead intent list ---- */
-  .intent-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .intent-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 14px;
-    border-radius: var(--dash-radius-sm);
-    background: var(--dash-bg-page);
-    border: 1px solid var(--dash-border);
-  }
-
-  .intent-row--active {
-    background: var(--dash-success);
-    border-color: var(--dash-success);
-  }
-
-  .intent-row--active .intent-row__label,
-  .intent-row--active .intent-row__pct {
-    color: #ffffff;
-  }
-
-  .intent-row__label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--dash-primary-text);
-    font-family: var(--dash-font-secondary);
-  }
-
-  .intent-row__pct {
-    font-size: var(--dash-text-tag);
-    font-weight: var(--dash-weight-semibold);
-    color: var(--dash-primary-text);
-    font-family: var(--dash-font-primary);
-  }
-
-  /* ---- Readiness timeline ---- */
-  .timeline-bars {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .timeline-col {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .timeline-col__track {
-    height: 10px;
-    background: var(--dash-border);
-    border-radius: 999px;
-    overflow: hidden;
-  }
-
-  .timeline-col__fill {
-    height: 100%;
-    background: var(--dash-border);
-    border-radius: 999px;
-    transition: width 0.4s ease;
-  }
-
-  .timeline-col__fill--active {
-    background: var(--dash-success);
-  }
-
-  .timeline-col__label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    color: var(--dash-secondary-text);
-    font-family: var(--dash-font-secondary);
+@layer utilities {
+  .progress-bar_bg {
+    @apply absolute inset-0;
+    background: var(--dash-progress-bg);
   }
 }

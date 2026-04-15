@@ -26,7 +26,8 @@ export async function POST(req: Request) {
         : null;
     //store answers as json excluding name and email
     const { name, email, ...restAnswers } = data;
-    const answers = { ...restAnswers, whatsapp };
+    const { qualified, ...answersOnly } = restAnswers;
+    const answers = { ...answersOnly, whatsapp };
     //Single SQL operation that inserts the row as well as returns selected columns from the same row
     const { data: inserted, error } = await supabaseAdmin
       .from("leads")
@@ -34,9 +35,9 @@ export async function POST(req: Request) {
         name,
         email,
         answers,
-        qualified: true,
+        qualified: qualified ?? false, // 👈 use the value from the request
       })
-      .select("id, created_at,email")
+      .select("id, created_at, email")
       .single();
 
     if (error) {

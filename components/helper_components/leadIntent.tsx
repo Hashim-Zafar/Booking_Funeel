@@ -1,31 +1,15 @@
-interface NeedsData {
-  adCreatives: number;
-  ugc: number;
-  brandVideo: number;
-  notSure: number;
-}
+import { leadIntentProps } from "@/src/utils/types";
+import { intentBuckets } from "@/src/utils";
+import { getBarShade } from "@/src/utils/helpers";
 
-interface Props {
-  needs: NeedsData;
-  totalRows: number;
-}
-
-const intentBuckets = [
-  { key: "adCreatives", label: "Ad Creatives" },
-  { key: "ugc", label: "UGC Content" },
-  { key: "brandVideo", label: "Brand Video" },
-  { key: "notSure", label: "Not Sure" },
-] as const;
-
-export default function LeadIntent({ needs, totalRows }: Props) {
-  // sort by count descending so highest intent shows first
+export default function LeadIntent({ needs, totalRows }: leadIntentProps) {
   const sorted = [...intentBuckets].sort((a, b) => needs[b.key] - needs[a.key]);
 
   return (
     <div className="insight-card">
       <h3 className="insight-card__title">Lead Intent</h3>
 
-      <div className="intent-list">
+      <div className="flex flex-col gap-2">
         {sorted.map(({ key, label }, i) => {
           const count = needs[key];
           const pct =
@@ -35,10 +19,30 @@ export default function LeadIntent({ needs, totalRows }: Props) {
           return (
             <div
               key={key}
-              className={`intent-row ${isTop ? "intent-row--active" : ""}`}
+              className="relative w-full rounded-lg overflow-hidden"
+              style={{ height: "44px" }}
             >
-              <span className="intent-row__label">{label}</span>
-              <span className="intent-row__pct">{pct}%</span>
+              {/* background track */}
+              <div className="progress-bar_bg" />
+              {/* fill bar — z-index 0 */}
+              <div
+                className={`absolute inset-y-0 left-0 rounded-lg transition-all duration-500 z-0 ${
+                  getBarShade(pct) ?? "bg-slate-700"
+                }`}
+                style={{ width: `${pct}%` }}
+              />
+
+              {/* label + pct — z-index 10 so it always sits above the fill */}
+              <div className="absolute inset-0 z-10 flex items-center justify-between px-4">
+                <span className={`text-[13px] font-semibold text-slate-800`}>
+                  {label}
+                </span>
+                <span
+                  className={`text-[13px] font-bold ${isTop ? "text-slate-800" : "text-slate-700"}`}
+                >
+                  {pct}%
+                </span>
+              </div>
             </div>
           );
         })}

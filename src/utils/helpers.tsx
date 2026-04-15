@@ -124,11 +124,11 @@ export function isValidTimeZone(zone: string) {
 }
 
 export function getBarShade(pct: number): string {
-  if (pct < 30) return "bg-emerald-200";
-  if (pct < 50) return "bg-emerald-300";
-  if (pct < 70) return "bg-emerald-400";
-  if (pct < 90) return "bg-emerald-500";
-  return "bg-emerald-600";
+  if (pct < 30) return "bg-[var(--dash-progress-ultra-low)]";
+  if (pct < 50) return "bg-[var(--dash-progress-low)]";
+  if (pct < 70) return "bg-[var(--dash-progress-medium)]";
+  if (pct < 90) return "bg-[var(--dash-progress-strong)]";
+  return "bg-[var(--dash-progress-medium)]";
 }
 
 export function isErrorResponse(res: LeadQualityData | error): res is error {
