@@ -45,7 +45,6 @@ export const assetsOptions = [
   "No",
 ] as const;
 
-
 export const ALLOWED_NEEDS = [
   "Ad creatives for Meta/TikTok/YouTube",
   "UGC",
@@ -124,5 +123,49 @@ export const QUESTIONS: QuestionConfig[] = [
     label: "Do you have the assets to produce ads this week?",
     options: assetsOptions,
   },
-
 ];
+
+export const buckets = [
+  { key: "b5000Plus", label: "$5,000+", tier: 1 },
+  { key: "b2000_5000", label: "$2,000 – $5,000", tier: 2 },
+  { key: "b800_2000", label: "$800 – $2,000", tier: 3 },
+  { key: "b300_800", label: "$300 – $800", tier: 4 },
+  { key: "lt300", label: "Under $300", tier: 5 },
+] as const;
+
+export const tierTextColor: Record<number, string> = {
+  1: "var(--dash-success)",
+  2: "#3b82f6",
+  3: "#f59e0b",
+  4: "#f59e0b",
+  5: "#ef4444",
+};
+
+export const tierLabel: Record<number, string> = {
+  1: "TIER 1 RATIO",
+  2: "TIER 2 RATIO",
+  3: "TIER 3 RATIO",
+  4: "TIER 4 RATIO",
+  5: "TIER 5 RATIO",
+};
+
+export const calloutBg: Record<number, string> = {
+  1: "#d1fae5",
+  2: "#dbeafe",
+  3: "#fef3c7",
+  4: "#fef3c7",
+  5: "#fee2e2",
+};
+
+export const intentBuckets = [
+  { key: "adCreatives", label: "Ad Creatives" },
+  { key: "ugc", label: "UGC Content" },
+  { key: "brandVideo", label: "Brand Video" },
+  { key: "notSure", label: "Not Sure" },
+] as const;
+
+export const timelineBuckets = [
+  { key: "asap", label: "IMMEDIATE" },
+  { key: "oneToTwoWeeks", label: "1–3 MONTHS" },
+  { key: "thisMonth", label: "3+ MONTHS" },
+] as const;
