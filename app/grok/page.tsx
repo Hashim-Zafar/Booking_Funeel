@@ -484,7 +484,23 @@ export default function LeadDashboard() {
         ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.4); border-radius: 3px; }
       `}</style>
 
+      <div className="flex min-h-screen items-center justify-center bg-[#080c14] px-6 text-center lg:hidden">
+        <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur">
+          <p className="mb-3 font-mono text-xs uppercase tracking-[0.24em] text-violet-300">
+            Dashboard Preview
+          </p>
+          <h1 className="text-2xl font-semibold text-slate-50">
+            This dashboard is only available on larger devices.
+          </h1>
+          <p className="mt-4 text-sm leading-relaxed text-slate-400">
+            Open this route on a laptop or desktop to view the full lead
+            pipeline and reporting layout.
+          </p>
+        </div>
+      </div>
+
       <div
+        className="hidden lg:block"
         style={{
           minHeight: "100vh",
           background:
@@ -984,7 +1000,7 @@ export default function LeadDashboard() {
         <div style={{ ...col2, marginTop: 40 }}>
           {/* Section 7: Call Outcomes */}
           <div>
-            <SectionTitle>This Month's Call Outcomes</SectionTitle>
+            <SectionTitle>This Month&apos;s Call Outcomes</SectionTitle>
             <div
               style={{
                 background: "rgba(255,255,255,0.02)",

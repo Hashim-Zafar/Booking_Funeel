@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function CTA() {
   return (
     <section
@@ -45,8 +47,8 @@ export default function CTA() {
             followers into customers.
           </p>
 
-          <a
-            href="#"
+          <Link
+            href="/booking"
             style={{
               backgroundColor: "var(--color-200)",
               color: "var(--color-100)",
@@ -63,7 +65,7 @@ export default function CTA() {
                 strokeLinejoin="round"
               />
             </svg>
-          </a>
+          </Link>
         </div>
 
         {/* Right — visual reel mockup */}
@@ -77,7 +79,7 @@ export default function CTA() {
             className="w-48 h-72 md:w-56 md:h-80 rounded-2xl relative z-10 overflow-hidden"
           >
             <video
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover object-center"
               src="/footer.mp4"
               autoPlay
               muted

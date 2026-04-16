@@ -117,7 +117,7 @@ export default function CaseStudies() {
               className="w-full h-64 md:h-80 rounded-2xl relative overflow-hidden flex items-end p-8"
             >
               <video
-                className="absolute inset-0 h-full w-full object-cover"
+                className="absolute inset-0 h-full w-full object-cover object-center"
                 src={c.video}
                 autoPlay
                 muted

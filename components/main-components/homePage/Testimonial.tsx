@@ -55,7 +55,7 @@ export default function Testimonial() {
         <div className="flex items-center justify-center">
           <div className="relative w-full max-w-xs h-64 rounded-2xl overflow-hidden bg-white/10">
             <video
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover object-center"
               src="/Bloom.mp4"
               autoPlay
               muted

@@ -19,16 +19,15 @@ export async function POST(req: Request) {
         },
       );
     }
+    const nowISO = new Date().toISOString();
     //?Query the pending_appointments table to get neccessary data
     console.log("Querying the database");
     const { data: pending_data, error: pending_error } = await supabaseAdmin
       .from("pending_appointments")
       .select(
-        "id , email , start_time , end_time ,name ,lead_id , meeting_link, timezone",
+        "id , email , start_time , end_time ,name ,lead_id , meeting_link, timezone, confirmed_at, expires_at",
       )
       .eq("token", parsed.data.token)
-      .is("confirmed_at", null)
-      .gt("expires_at", new Date().toISOString())
       .single();
     //!guard clause
     if (pending_error) {
@@ -42,6 +41,23 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { message: "Failed to look up confirmation token" },
         { status: 500 },
+      );
+    }
+
+    if (pending_data.confirmed_at) {
+      return NextResponse.json(
+        {
+          message: "Booking already confirmed",
+          alreadyConfirmed: true,
+        },
+        { status: 200 },
+      );
+    }
+
+    if (pending_data.expires_at <= nowISO) {
+      return NextResponse.json(
+        { message: "Link expired or already used" },
+        { status: 404 },
       );
     }
 
@@ -62,9 +78,27 @@ export async function POST(req: Request) {
     if (appointment_error) {
       console.error("Appointment error ", appointment_error);
       if (isUniqueVoilation(appointment_error)) {
+        const { error: confirmStampError } = await supabaseAdmin
+          .from("pending_appointments")
+          .update({
+            confirmed_at: nowISO,
+          })
+          .eq("token", parsed.data.token)
+          .is("confirmed_at", null);
+
+        if (confirmStampError) {
+          console.error(
+            "Failed to stamp confirmed_at after unique violation",
+            confirmStampError,
+          );
+        }
+
         return NextResponse.json(
-          { message: "Slot already booked" },
-          { status: 409 },
+          {
+            message: "Booking already confirmed",
+            alreadyConfirmed: true,
+          },
+          { status: 200 },
         );
       }
       return NextResponse.json(
@@ -78,12 +112,13 @@ export async function POST(req: Request) {
         { status: 500 },
       );
     }
-    const { data, error } = await supabaseAdmin
+    const { error } = await supabaseAdmin
       .from("pending_appointments")
       .update({
-        confirmed_at: new Date().toISOString(),
+        confirmed_at: nowISO,
       })
       .eq("token", parsed.data.token)
+      .is("confirmed_at", null)
       .select();
     //!minor guard clause
     if (error) {
