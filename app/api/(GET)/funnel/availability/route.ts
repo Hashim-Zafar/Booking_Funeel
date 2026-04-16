@@ -7,6 +7,7 @@ import {
   isValidTimeZone,
   dayRangeUTCFromLocalDate,
   hmToParts,
+  isFutureSlot,
 } from "@/src/utils/helpers";
 import { DateTime } from "luxon";
 import { call_slot_minutes, WEEKLY_WINDOWS } from "@/src/utils/availibility";
@@ -111,8 +112,10 @@ export async function GET(req: NextRequest) {
     while (cursor < closeLocal) {
       const slotEnd = cursor.plus({ minutes: call_slot_minutes });
       if (slotEnd <= closeLocal) {
-        const slotStartUTC = cursor.toUTC().toISO();
+        const slotStart = cursor.toUTC();
+        const slotStartUTC = slotStart.toISO();
         if (
+          isFutureSlot(slotStart) &&
           slotStartUTC &&
           !bookedStartUTC.has(slotStartUTC) &&
           !pendingStartTimes.has(slotStartUTC)

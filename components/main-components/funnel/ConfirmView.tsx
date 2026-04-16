@@ -1,22 +1,27 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
+const CONTACT_EMAIL = "hashimzafarwork@gmail.com";
+
 export default function ConfirmView({ token }: { token: string | null }) {
-  const [status, setStatus] = useState<"loading" | "success" | "error">(
-    "loading",
+  const [status, setStatus] = useState<"loading" | "success" | "error">(() =>
+    token ? "loading" : "error",
   );
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(() =>
+    token ? null : "Invalid confirmation link",
+  );
   const [details, setDetails] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [visible, setVisible] = useState(false);
+  const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">(
+    "idle",
+  );
 
   useEffect(() => {
-    if (!token) {
-      setStatus("error");
-      setMessage("Invalid confirmation link");
-      return;
-    }
+    if (!token || status === "error") return;
+
     async function fetchAPI() {
       try {
         const res = await fetch("/api/confirm", {
@@ -35,41 +40,58 @@ export default function ConfirmView({ token }: { token: string | null }) {
         }
 
         setStatus("success");
-        setTimeout(() => setVisible(true), 100);
+        window.setTimeout(() => setVisible(true), 100);
       } catch {
         setStatus("error");
         setMessage("Network error. Please try again.");
       }
     }
-    fetchAPI();
-  }, [token]);
 
-  // ── LOADING ──────────────────────────────────────────────────────────────
+    fetchAPI();
+  }, [status, token]);
+
+  useEffect(() => {
+    if (copyStatus === "idle") return;
+
+    const timeout = window.setTimeout(() => {
+      setCopyStatus("idle");
+    }, 2500);
+
+    return () => window.clearTimeout(timeout);
+  }, [copyStatus]);
+
+  async function handleCopyEmail() {
+    try {
+      await navigator.clipboard.writeText(CONTACT_EMAIL);
+      setCopyStatus("copied");
+    } catch {
+      setCopyStatus("failed");
+    }
+  }
+
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-[#090b10] flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-[#090b10]">
         <div className="flex flex-col items-center gap-4">
-          <div className="relative w-12 h-12">
+          <div className="relative h-12 w-12">
             <div className="absolute inset-0 rounded-full border-2 border-[#1e293b]" />
-            <div className="absolute inset-0 rounded-full border-t-2 border-[#38bdf8] animate-spin" />
+            <div className="absolute inset-0 animate-spin rounded-full border-t-2 border-[#38bdf8]" />
           </div>
-          <p className="text-[#475569] text-sm tracking-widest uppercase font-mono">
-            Confirming booking…
+          <p className="font-mono text-sm uppercase tracking-widest text-[#475569]">
+            Confirming booking...
           </p>
         </div>
       </div>
     );
   }
 
-  // ── ERROR ─────────────────────────────────────────────────────────────────
   if (status === "error") {
     return (
-      <div className="min-h-screen bg-[#090b10] flex items-center justify-center px-4">
-        <div className="max-w-md w-full border border-[#1e293b] rounded-2xl p-8 bg-[#0d1117] text-center">
-          {/* X icon */}
-          <div className="mx-auto mb-6 w-14 h-14 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-[#090b10] px-4">
+        <div className="w-full max-w-md rounded-2xl border border-[#1e293b] bg-[#0d1117] p-8 text-center">
+          <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full border border-red-500/20 bg-red-500/10">
             <svg
-              className="w-6 h-6 text-red-400"
+              className="h-6 w-6 text-red-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -82,12 +104,12 @@ export default function ConfirmView({ token }: { token: string | null }) {
               />
             </svg>
           </div>
-          <h2 className="text-white text-xl font-semibold mb-2">
+          <h2 className="mb-2 text-xl font-semibold text-white">
             {message ?? "Something went wrong"}
           </h2>
-          {details && <p className="text-[#64748b] text-sm mb-1">{details}</p>}
+          {details && <p className="mb-1 text-sm text-[#64748b]">{details}</p>}
           {error && (
-            <p className="text-red-400/70 text-xs font-mono mt-3 bg-red-500/5 border border-red-500/10 rounded-lg px-4 py-2">
+            <p className="mt-3 rounded-lg border border-red-500/10 bg-red-500/5 px-4 py-2 font-mono text-xs text-red-400/70">
               {error}
             </p>
           )}
@@ -96,14 +118,11 @@ export default function ConfirmView({ token }: { token: string | null }) {
     );
   }
 
-  // ── SUCCESS ───────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#090b10] flex items-center justify-center px-4 py-12 overflow-hidden relative">
-      {/* Ambient glow blobs */}
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#090b10] px-4 py-12">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-sky-500/5 blur-[120px]" />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-violet-500/5 blur-[100px]" />
-        {/* Grid lines */}
+        <div className="absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-sky-500/5 blur-[120px]" />
+        <div className="absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-violet-500/5 blur-[100px]" />
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -114,22 +133,18 @@ export default function ConfirmView({ token }: { token: string | null }) {
         />
       </div>
 
-      {/* Card */}
       <div
-        className={`relative max-w-lg w-full transition-all duration-700 ease-out ${
-          visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+        className={`relative w-full max-w-lg transition-all duration-700 ease-out ${
+          visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
         }`}
       >
-        {/* Top border glow */}
-        <div className="absolute -inset-px rounded-2xl bg-gradient-to-b from-sky-500/30 via-transparent to-transparent pointer-events-none" />
+        <div className="pointer-events-none absolute -inset-px rounded-2xl bg-gradient-to-b from-sky-500/30 via-transparent to-transparent" />
 
-        <div className="rounded-2xl bg-[#0d1117]/90 border border-[#1e293b] backdrop-blur-xl overflow-hidden">
-          {/* Header strip */}
-          <div className="bg-gradient-to-r from-sky-600/20 via-violet-600/10 to-transparent border-b border-[#1e293b] px-8 py-6 flex items-center gap-4">
-            {/* Checkmark */}
-            <div className="shrink-0 w-12 h-12 rounded-full bg-sky-500/15 border border-sky-400/30 flex items-center justify-center">
+        <div className="overflow-hidden rounded-2xl border border-[#1e293b] bg-[#0d1117]/90 backdrop-blur-xl">
+          <div className="flex items-center gap-4 border-b border-[#1e293b] bg-gradient-to-r from-sky-600/20 via-violet-600/10 to-transparent px-8 py-6">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-sky-400/30 bg-sky-500/15">
               <svg
-                className="w-5 h-5 text-sky-400"
+                className="h-5 w-5 text-sky-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -143,22 +158,20 @@ export default function ConfirmView({ token }: { token: string | null }) {
               </svg>
             </div>
             <div>
-              <p className="text-xs font-mono tracking-widest text-sky-400/70 uppercase mb-0.5">
+              <p className="mb-0.5 font-mono text-xs uppercase tracking-widest text-sky-400/70">
                 Booking confirmed
               </p>
-              <h1 className="text-white text-xl font-semibold">
-                You're all set 🎉
+              <h1 className="text-xl font-semibold text-white">
+                You are all set.
               </h1>
             </div>
           </div>
 
-          <div className="px-8 py-7 space-y-5">
-            {/* Reminders card */}
-            <div className="rounded-xl bg-[#111827] border border-[#1e293b] p-5">
-              <div className="flex items-center gap-2.5 mb-4">
-                {/* Bell icon */}
+          <div className="space-y-5 px-8 py-7">
+            <div className="rounded-xl border border-[#1e293b] bg-[#111827] p-5">
+              <div className="mb-4 flex items-center gap-2.5">
                 <svg
-                  className="w-4 h-4 text-amber-400"
+                  className="h-4 w-4 text-amber-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -170,33 +183,31 @@ export default function ConfirmView({ token }: { token: string | null }) {
                     d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
                   />
                 </svg>
-                <span className="text-white text-sm font-medium">
-                  Smart Reminders
+                <span className="text-sm font-medium text-white">
+                  Smart reminders
                 </span>
               </div>
-              <p className="text-[#64748b] text-sm leading-relaxed mb-4">
-                You'll receive email reminders at these intervals before the
+              <p className="mb-4 text-sm leading-relaxed text-[#64748b]">
+                You will receive email reminders at these intervals before the
                 meeting so you never miss it:
               </p>
-              <div className="flex gap-2 flex-wrap">
-                {["24 hours", "3 hours", "30 minutes"].map((t) => (
+              <div className="flex flex-wrap gap-2">
+                {["24 hours", "3 hours", "30 minutes"].map((time) => (
                   <span
-                    key={t}
-                    className="inline-flex items-center gap-1.5 bg-amber-500/10 border border-amber-400/20 text-amber-300 rounded-full px-3 py-1 text-xs font-mono"
+                    key={time}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/20 bg-amber-500/10 px-3 py-1 text-xs font-mono text-amber-300"
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />
-                    {t} before
+                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-400" />
+                    {time} before
                   </span>
                 ))}
               </div>
             </div>
 
-            {/* Demo notice */}
-            <div className="rounded-xl bg-[#111827] border border-violet-500/20 p-5 flex gap-3">
-              <div className="shrink-0 mt-0.5">
-                {/* Info icon */}
+            <div className="flex gap-3 rounded-xl border border-violet-500/20 bg-[#111827] p-5">
+              <div className="mt-0.5 shrink-0">
                 <svg
-                  className="w-4 h-4 text-violet-400"
+                  className="h-4 w-4 text-violet-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -209,40 +220,56 @@ export default function ConfirmView({ token }: { token: string | null }) {
                   />
                 </svg>
               </div>
-              <div>
-                <p className="text-violet-300 text-sm font-medium mb-1">
-                  Demo Mode
+              <div className="w-full space-y-3">
+                <div>
+                  <p className="mb-1 text-sm font-medium text-violet-300">
+                    Demo mode
+                  </p>
+                  <p className="text-sm leading-relaxed text-[#64748b]">
+                    This is a demo version, but in a real system the booking
+                    flow would generate the meeting link automatically and keep
+                    the appointment synced end to end.
+                  </p>
+                </div>
+                <p className="text-sm leading-relaxed text-[#64748b]">
+                  If a lead misses the call, the system can trigger follow-up
+                  outreach, update lead status, and continue the downstream
+                  automations after the meeting.
                 </p>
-                <p className="text-[#64748b] text-sm leading-relaxed">
-                  This is a demo version — a real video call link won't be
-                  generated. This lets you experience the full booking flow as
-                  your leads would.
-                </p>
+                <div className="rounded-lg border border-violet-500/15 bg-violet-500/5 px-3 py-2">
+                  <p className="font-mono text-xs uppercase tracking-widest text-violet-200">
+                    Want to see the dashboard too?
+                  </p>
+                  <Link
+                    href="/grok"
+                    className="mt-2 inline-flex items-center gap-2 text-sm text-violet-300 transition hover:text-violet-200"
+                  >
+                    Open the dashboard preview
+                    <span aria-hidden="true">-&gt;</span>
+                  </Link>
+                </div>
               </div>
             </div>
 
-            {/* Divider */}
             <div className="border-t border-[#1e293b]" />
 
-            {/* CTA */}
             <div>
-              <p className="text-[#475569] text-xs tracking-widest uppercase font-mono mb-3">
+              <p className="mb-3 font-mono text-xs uppercase tracking-widest text-[#475569]">
                 Like what you see?
               </p>
-              <p className="text-[#94a3b8] text-sm mb-4 leading-relaxed">
+              <p className="mb-4 text-sm leading-relaxed text-[#94a3b8]">
                 Get this booking system set up for your business. Reach out and
-                let's talk.
+                let&apos;s talk.
               </p>
-              <div className="flex items-center gap-3">
-                {/* Email */}
-                <a
-                  href="mailto:hashimzafarwork@gmail.com"
-                  title="hashimzafarwork@gmail.com"
-                  className="group flex items-center gap-2.5 bg-[#111827] hover:bg-sky-500/10 border border-[#1e293b] hover:border-sky-500/30 text-[#94a3b8] hover:text-sky-300 rounded-xl px-4 py-2.5 text-sm transition-all duration-200"
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleCopyEmail}
+                  title={CONTACT_EMAIL}
+                  className="group flex items-center gap-2.5 rounded-xl border border-[#1e293b] bg-[#111827] px-4 py-2.5 text-sm text-[#94a3b8] transition-all duration-200 hover:border-sky-500/30 hover:bg-sky-500/10 hover:text-sky-300"
                 >
-                  {/* Mail icon */}
                   <svg
-                    className="w-4 h-4 shrink-0"
+                    className="h-4 w-4 shrink-0"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -254,20 +281,24 @@ export default function ConfirmView({ token }: { token: string | null }) {
                       d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
                     />
                   </svg>
-                  <span>Email me</span>
-                </a>
+                  <span>
+                    {copyStatus === "copied"
+                      ? "Email copied"
+                      : copyStatus === "failed"
+                        ? "Copy failed"
+                        : "Copy email"}
+                  </span>
+                </button>
 
-                {/* LinkedIn */}
                 <a
                   href="https://www.linkedin.com/in/hashim-zafar-1496ba366/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  title="LinkedIn — Hashim Zafar"
-                  className="group flex items-center gap-2.5 bg-[#111827] hover:bg-sky-500/10 border border-[#1e293b] hover:border-sky-500/30 text-[#94a3b8] hover:text-sky-300 rounded-xl px-4 py-2.5 text-sm transition-all duration-200"
+                  title="LinkedIn - Hashim Zafar"
+                  className="group flex items-center gap-2.5 rounded-xl border border-[#1e293b] bg-[#111827] px-4 py-2.5 text-sm text-[#94a3b8] transition-all duration-200 hover:border-sky-500/30 hover:bg-sky-500/10 hover:text-sky-300"
                 >
-                  {/* LinkedIn icon */}
                   <svg
-                    className="w-4 h-4 shrink-0"
+                    className="h-4 w-4 shrink-0"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -276,16 +307,20 @@ export default function ConfirmView({ token }: { token: string | null }) {
                   <span>LinkedIn</span>
                 </a>
               </div>
+              <p className="mt-3 font-mono text-xs text-[#475569]">
+                {copyStatus === "failed"
+                  ? `Could not copy automatically. Email: ${CONTACT_EMAIL}`
+                  : CONTACT_EMAIL}
+              </p>
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="border-t border-[#1e293b] px-8 py-4 bg-[#090b10]/60 flex items-center justify-between">
-            <span className="text-[#334155] text-xs font-mono">
+          <div className="flex items-center justify-between border-t border-[#1e293b] bg-[#090b10]/60 px-8 py-4">
+            <span className="font-mono text-xs text-[#334155]">
               demo.booking
             </span>
-            <span className="inline-flex items-center gap-1.5 text-[#334155] text-xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="inline-flex items-center gap-1.5 text-xs text-[#334155]">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
               Confirmed
             </span>
           </div>

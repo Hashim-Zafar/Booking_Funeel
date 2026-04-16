@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer
@@ -68,19 +70,29 @@ export default function Footer() {
             </p>
             <ul className="flex flex-col gap-2.5">
               {[
-                { label: "Book a call", href: "#" },
+                { label: "Book a call", href: "/booking" },
                 { label: "Instagram", href: "https://instagram.com" },
                 { label: "LinkedIn", href: "https://linkedin.com" },
                 { label: "Twitter", href: "https://twitter.com" },
               ].map((item) => (
                 <li key={item.label}>
-                  <a
-                    href={item.href}
-                    style={{ color: "var(--color-500)" }}
-                    className="text-sm hover:opacity-50 transition-opacity"
-                  >
-                    {item.label}
-                  </a>
+                  {item.href.startsWith("/") ? (
+                    <Link
+                      href={item.href}
+                      style={{ color: "var(--color-500)" }}
+                      className="text-sm hover:opacity-50 transition-opacity"
+                    >
+                      {item.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={item.href}
+                      style={{ color: "var(--color-500)" }}
+                      className="text-sm hover:opacity-50 transition-opacity"
+                    >
+                      {item.label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>

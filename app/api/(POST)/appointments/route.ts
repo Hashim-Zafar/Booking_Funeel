@@ -6,6 +6,7 @@ import {
   computeEnd,
   isAlignedToSlot,
   isWithInAvailability,
+  isFutureSlot,
   isUniqueVoilation,
 } from "@/src/utils/helpers";
 import { appointmentSchema } from "@/src/lib/appointmentSchema";
@@ -73,6 +74,13 @@ export async function POST(req: Request) {
     if (!isWithInAvailability(dtStart, dtEnd)) {
       return NextResponse.json(
         { error: "Selected slot is outside availability" },
+        { status: 400 },
+      );
+    }
+
+    if (!isFutureSlot(dtStart)) {
+      return NextResponse.json(
+        { error: "Selected slot is in the past" },
         { status: 400 },
       );
     }

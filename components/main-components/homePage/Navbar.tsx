@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useState } from "react";
 
 export default function Navbar() {
@@ -15,7 +16,7 @@ export default function Navbar() {
       className="w-full px-6 md:px-12 py-4 flex items-center justify-between sticky top-0 z-50 border-b border-black/10"
     >
       {/* Logo */}
-      <a href="/" className="flex items-center gap-2">
+      <Link href="/" className="flex items-center gap-2">
         <div
           style={{ backgroundColor: "var(--color-200)" }}
           className="w-8 h-8 rounded-full flex items-center justify-center"
@@ -28,7 +29,7 @@ export default function Navbar() {
         >
           viral
         </span>
-      </a>
+      </Link>
 
       {/* Desktop Links */}
       <div className="hidden md:flex items-center gap-8">
@@ -45,8 +46,8 @@ export default function Navbar() {
       </div>
 
       {/* CTA Button */}
-      <a
-        href="#"
+      <Link
+        href="/booking"
         style={{
           backgroundColor: "var(--color-200)",
           color: "var(--color-100)",
@@ -63,7 +64,7 @@ export default function Navbar() {
             strokeLinejoin="round"
           />
         </svg>
-      </a>
+      </Link>
 
       {/* Mobile Hamburger */}
       <button
@@ -101,8 +102,8 @@ export default function Navbar() {
               {link}
             </a>
           ))}
-          <a
-            href="#"
+          <Link
+            href="/booking"
             style={{
               backgroundColor: "var(--color-200)",
               color: "var(--color-100)",
@@ -110,7 +111,7 @@ export default function Navbar() {
             className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium mt-2"
           >
             Book a call
-          </a>
+          </Link>
         </div>
       )}
     </nav>

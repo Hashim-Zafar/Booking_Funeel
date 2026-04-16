@@ -60,7 +60,7 @@ export default function HowWeWork() {
           >
             <div className="overflow-hidden rounded-xl">
               <video
-                className="h-48 w-full object-cover"
+                className="h-48 w-full object-cover object-center"
                 src={step.video}
                 autoPlay
                 muted

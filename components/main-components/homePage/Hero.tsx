@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const brands: string[] = ["Glowhaus", "Bloom", "Theo", "Nova", "Arkly"];
 const heroVideos = [
   { src: "/Hero_Video_1.mp4", label: "@jessicasu3h" },
@@ -40,8 +42,8 @@ export default function Hero() {
       </p>
 
       {/* CTA */}
-      <a
-        href="#"
+      <Link
+        href="/booking"
         style={{
           backgroundColor: "var(--color-200)",
           color: "var(--color-100)",
@@ -58,7 +60,7 @@ export default function Hero() {
             strokeLinejoin="round"
           />
         </svg>
-      </a>
+      </Link>
 
       {/* Reel Cards Visual */}
       <div className="relative w-full max-w-4xl flex items-end justify-center gap-3">
@@ -68,7 +70,7 @@ export default function Hero() {
           className="hidden md:flex w-44 h-64 rounded-2xl overflow-hidden flex-shrink-0 self-end mb-4 items-center justify-center relative"
         >
           <video
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover object-center"
             src={heroVideos[0].src}
             autoPlay
             muted
@@ -84,7 +86,7 @@ export default function Hero() {
         >
           <div className="w-full h-full relative">
             <video
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover object-center"
               src={heroVideos[1].src}
               autoPlay
               muted
@@ -113,7 +115,7 @@ export default function Hero() {
           className="hidden md:flex w-44 h-64 rounded-2xl overflow-hidden flex-shrink-0 self-end mb-4 items-center justify-center relative"
         >
           <video
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover object-center"
             src={heroVideos[2].src}
             autoPlay
             muted

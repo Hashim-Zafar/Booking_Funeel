@@ -95,6 +95,10 @@ export function isWithInAvailability(dtStart: DateTime, dtEnd: DateTime) {
   return start_local >= open && end_local <= close;
 }
 
+export function isFutureSlot(dtStart: DateTime) {
+  return dtStart.toUTC() > DateTime.utc();
+}
+
 export function isUniqueVoilation(error: any) {
   return error?.code === "23505";
 }

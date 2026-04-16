@@ -4,6 +4,7 @@ interface TeamMember {
   name: string;
   role: string;
   image: string;
+  imagePosition: string;
 }
 
 const team: TeamMember[] = [
@@ -11,16 +12,19 @@ const team: TeamMember[] = [
     name: "Sofia Little",
     role: "Creative Lead",
     image: "/team_1.avif",
+    imagePosition: "center 24%",
   },
   {
     name: "James Cohen",
     role: "Founder & CEO",
     image: "/team_2.avif",
+    imagePosition: "center 18%",
   },
   {
     name: "Maya Rodriguez",
     role: "Growth Specialist",
     image: "/team_3.avif",
+    imagePosition: "center 20%",
   },
 ];
 
@@ -53,15 +57,16 @@ export default function Team() {
             {/* Avatar card */}
             <div
               style={{ backgroundColor: "var(--color-300)" }}
-              className="w-full h-72 md:h-80 rounded-2xl flex items-end p-6 relative overflow-hidden"
+              className="relative w-full aspect-[4/5] overflow-hidden rounded-2xl"
             >
               <Image
                 src={member.image}
                 alt={member.name}
                 fill
                 className="object-cover"
+                style={{ objectPosition: member.imagePosition }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent" />
             </div>
             <div>
               <p
@@ -97,8 +102,8 @@ export default function Team() {
             style={{ color: "var(--color-500)" }}
             className="text-sm max-w-md leading-relaxed"
           >
-            We&apos;re always looking for talented strategists and growth experts to
-            join our mission of helping brands go viral.
+            We&apos;re always looking for talented strategists and growth
+            experts to join our mission of helping brands go viral.
           </p>
         </div>
         <a
