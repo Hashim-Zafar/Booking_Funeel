@@ -1,7 +1,8 @@
 import { adSpendOptions, creativeBudgetOptions } from ".";
-import { DateTime, Duration } from "luxon";
+import { DateTime } from "luxon";
 import { call_slot_minutes, timezone, WEEKLY_WINDOWS } from "./availibility";
 import { IANAZone } from "luxon";
+import { LeadQualityData, error } from "./types";
 
 //!Form validation helpers
 export const isAdSpendQualified = (v: (typeof adSpendOptions)[number]) => {
@@ -94,6 +95,10 @@ export function isWithInAvailability(dtStart: DateTime, dtEnd: DateTime) {
   return start_local >= open && end_local <= close;
 }
 
+export function isFutureSlot(dtStart: DateTime) {
+  return dtStart.toUTC() > DateTime.utc();
+}
+
 export function isUniqueVoilation(error: any) {
   return error?.code === "23505";
 }
@@ -122,4 +127,15 @@ export function isValidTimeZone(zone: string) {
   return IANAZone.isValidZone(zone);
 }
 
-//!confirmDate&Time route
+export function getBarShade(pct: number): string {
+  if (pct < 30) return "bg-[var(--dash-progress-ultra-low)]";
+  if (pct < 50) return "bg-[var(--dash-progress-low)]";
+  if (pct < 70) return "bg-[var(--dash-progress-medium)]";
+  if (pct < 90) return "bg-[var(--dash-progress-strong)]";
+  return "bg-[var(--dash-progress-medium)]";
+}
+
+export function isErrorResponse(res: LeadQualityData | error): res is error {
+  //when the function returns true type script will assume it is an error
+  return "success" in res && res.success === false; //checks if the object has a property called success , and if it does check if success === false?
+}

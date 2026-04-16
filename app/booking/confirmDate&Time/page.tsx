@@ -106,10 +106,13 @@ export default function BookingCallsUI() {
         timezone: tz,
       });
 
-      const response = await fetch(`/api/availability?${params.toString()}`, {
-        method: "GET",
-        cache: "no-store",
-      });
+      const response = await fetch(
+        `/api/funnel/availability?${params.toString()}`,
+        {
+          method: "GET",
+          cache: "no-store",
+        },
+      );
       const body = await response.json();
 
       if (!response.ok) {

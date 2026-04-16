@@ -1,4 +1,4 @@
-import ConfirmView from "@/components/ConfirmView";
+import ConfirmView from "@/components/main-components/funnel/ConfirmView";
 
 export default async function ConfirmBookingPage({
   searchParams,

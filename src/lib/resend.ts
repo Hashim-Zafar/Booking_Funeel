@@ -15,9 +15,10 @@ export async function sendConfirmationEmail({
   timezone: string;
   token: string;
 }) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const from = process.env.RESEND_FROM?.trim();
+  const appUrl =
+    process.env.APP_URL?.trim() ?? process.env.NEXT_PUBLIC_APP_URL?.trim();
 
   if (!apiKey || !from || !appUrl) {
     throw new Error("Missing Resend environment variables");
@@ -29,9 +30,12 @@ export async function sendConfirmationEmail({
     .setZone(timezone)
     .toFormat("cccc, LLLL d yyyy 'at' h:mm a ZZZZ");
 
-  const confirmUrl = `${appUrl}/confirm-booking?token=${token}`;
+  const confirmUrl = new URL(
+    `/confirm-booking?token=${token}`,
+    appUrl,
+  ).toString();
 
-  await resend.emails.send({
+  const result = await resend.emails.send({
     from,
     to,
     subject: "Confirm your booking",
@@ -46,4 +50,10 @@ export async function sendConfirmationEmail({
       <p>This link expires in 1 hour.</p>
     `,
   });
+
+  if (result.error) {
+    throw new Error(
+      `Resend failed: ${result.error.name} (${result.error.statusCode ?? "unknown"}) ${result.error.message}`,
+    );
+  }
 }
