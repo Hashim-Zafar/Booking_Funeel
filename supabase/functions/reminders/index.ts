@@ -5,7 +5,7 @@ import { Resend } from "npm:resend";
 // time windows in minutes
 const WINDOWS: Record<string, { lower: number; upper: number }> = {
   "24h": { lower: 23 * 60 + 50, upper: 24 * 60 + 10 },
-  "3h":  { lower: 2 * 60 + 50,  upper: 3 * 60 + 10  },
+  "12h": { lower: 11 * 60 + 50, upper: 12 * 60 + 10 },
   "30m": { lower: 20,            upper: 40            },
 };
 
@@ -72,8 +72,32 @@ if (!supabaseUrl || !serviceKey) {
 
         const labelText = {
           "24h": "24 hours",
-          "3h": "3 hours",
+          "12h": "12 hours",
           "30m": "30 minutes",
+        }[label];
+
+        const reminderHtml = {
+          "24h": `
+            <p>Hi ${apt.invitee_name},</p>
+            <p>This is a quick reminder that your call is scheduled for tomorrow.</p>
+            <p><strong>When:</strong> ${meetingTime}</p>
+            <p>Please keep this time blocked in your calendar. In the real application, the meeting link and joining details would be handled separately.</p>
+            <p>See you tomorrow.</p>
+          `,
+          "12h": `
+            <p>Hi ${apt.invitee_name},</p>
+            <p>Your call is coming up in <strong>12 hours</strong>.</p>
+            <p><strong>When:</strong> ${meetingTime}</p>
+            <p>This reminder is just to help you stay on schedule. In the real application, the meeting link would be shared as part of the live booking flow.</p>
+            <p>See you soon.</p>
+          `,
+          "30m": `
+            <p>Hi ${apt.invitee_name},</p>
+            <p>Your call starts in <strong>30 minutes</strong>.</p>
+            <p><strong>When:</strong> ${meetingTime}</p>
+            <p><strong>Meeting link:</strong> In the real application, this would be a real meeting link.</p>
+            <p>Please be ready to join on time.</p>
+          `,
         }[label];
 
         // send reminder email
@@ -81,13 +105,7 @@ if (!supabaseUrl || !serviceKey) {
           from: resendFrom,
           to: apt.invitee_email,
           subject: `Reminder: Your call is in ${labelText}`,
-          html: `
-            <p>Hi ${apt.invitee_name},</p>
-            <p>This is a reminder that your call is coming up in <strong>${labelText}</strong>.</p>
-            <p><strong>When:</strong> ${meetingTime}</p>
-            <p><strong>Meeting link:</strong> <a href="${apt.meeting_link}">${apt.meeting_link}</a></p>
-            <p>See you soon!</p>
-          `,
+          html: reminderHtml,
         });
 
         // mark reminder as sent
