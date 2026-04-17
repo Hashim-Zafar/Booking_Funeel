@@ -1,15 +1,13 @@
 @import "tailwindcss";
 
-@layer theme {
-  :root {
-    --color-100: #f7f2ea; /*page background color*/
-    --color-200: #000; /*button and text color*/
-    --color-300: #f3ece1; /*cards background color*/
-    --color-400: #00000014; /*faq cards color*/
-    --color-500: #99a1af; /*sub-text color*/
-    --font-main: "Inter", sans-serif;
-    --font-secondary: sans-serif;
-  }
+@theme {
+  --color-100: #f7f2ea; /*page background color*/
+  --color-200: #000; /*button and text color*/
+  --color-300: #f3ece1; /*cards background color*/
+  --color-400: #00000014; /*faq cards color*/
+  --color-500: #99a1af; /*sub-text color*/
+  --font-main: "Inter", sans-serif;
+  --font-secondary: sans-serif;
 }
 
 @layer base {

@@ -6,25 +6,34 @@ import { Resend } from "npm:resend";
 const WINDOWS: Record<string, { lower: number; upper: number }> = {
   "24h": { lower: 23 * 60 + 50, upper: 24 * 60 + 10 },
   "12h": { lower: 11 * 60 + 50, upper: 12 * 60 + 10 },
-  "30m": { lower: 20,            upper: 40            },
+  "30m": { lower: 20, upper: 40 },
 };
 
 Deno.serve(async (req) => {
   try {
     // Step 1: parse and validate the label
     const { label } = await req.json();
-const supabaseUrl = Deno.env.get("SUPABASE_URL");
-const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-//!guard clause
-if (!supabaseUrl || !serviceKey) {
-  return new Response(
-    JSON.stringify({ error: "Missing environment variables" }),
-    { status: 500, headers: { "Content-Type": "application/json" } },
-  );
-}
+    if (!label || !WINDOWS[label]) {
+      return new Response(
+        JSON.stringify({ error: ` Invalid label ${label}` }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    //!guard clause
+    if (!supabaseUrl || !serviceKey) {
+      return new Response(
+        JSON.stringify({ error: "Missing environment variables" }),
+        { status: 500, headers: { "Content-Type": "application/json" } },
+      );
+    }
 
     // Step 2: initialize clients
- const supabase = createClient(supabaseUrl, serviceKey);
+    const supabase = createClient(supabaseUrl, serviceKey);
     const resend = new Resend(Deno.env.get("RESEND_API_KEY")!);
     const resendFrom = Deno.env.get("RESEND_FROM")!;
 
@@ -36,7 +45,9 @@ if (!supabaseUrl || !serviceKey) {
     // Step 4: query appointments that need this reminder
     const { data: appointments, error: queryError } = await supabase
       .from("appointments")
-      .select("id, invitee_name, invitee_email, start_time, timezone, reminders_sent")
+      .select(
+        "id, invitee_name, invitee_email, start_time, timezone, reminders_sent",
+      )
       .gte("start_time", lower.toISOString())
       .lte("start_time", upper.toISOString())
       .neq("status", "canceled")
@@ -44,16 +55,19 @@ if (!supabaseUrl || !serviceKey) {
 
     if (queryError) {
       return new Response(
-        JSON.stringify({ error: "Failed to query appointments", details: queryError.message }),
+        JSON.stringify({
+          error: "Failed to query appointments",
+          details: queryError.message,
+        }),
         { status: 500, headers: { "Content-Type": "application/json" } },
       );
     }
 
     if (!appointments || appointments.length === 0) {
-      return new Response(
-        JSON.stringify({ message: "No reminders to send" }),
-        { status: 200, headers: { "Content-Type": "application/json" } },
-      );
+      return new Response(JSON.stringify({ message: "No reminders to send" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     // Step 5: send email and mark reminder as sent for each appointment
@@ -84,7 +98,7 @@ if (!supabaseUrl || !serviceKey) {
             <p>Please keep this time blocked in your calendar. In the real application, the meeting link and joining details would be handled separately.</p>
             <p>See you tomorrow.</p>
           `,
-          "12h": `
+          "3h": `
             <p>Hi ${apt.invitee_name},</p>
             <p>Your call is coming up in <strong>12 hours</strong>.</p>
             <p><strong>When:</strong> ${meetingTime}</p>
@@ -117,8 +131,10 @@ if (!supabaseUrl || !serviceKey) {
           .eq("id", apt.id);
 
         if (updateError) {
-       
-          console.error(`Failed to update reminders_sent for appointment ${apt.id}:`, updateError.message);
+          console.error(
+            `Failed to update reminders_sent for appointment ${apt.id}:`,
+            updateError.message,
+          );
         }
 
         return apt.id;
@@ -137,7 +153,6 @@ if (!supabaseUrl || !serviceKey) {
       }),
       { status: 200, headers: { "Content-Type": "application/json" } },
     );
-
   } catch (err) {
     return new Response(
       JSON.stringify({ error: "Server error", details: String(err) }),
